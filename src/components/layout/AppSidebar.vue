@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 
 <template>
   <nav aria-label="Menu da PetSchool">
-    <div class="nav flex-column nav-pills gap-1">
+    <div class="nav flex-column nav-pills gap-2">
       <RouterLink
         class="nav-link"
         active-class="active"
