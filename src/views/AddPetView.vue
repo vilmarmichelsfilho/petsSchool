@@ -47,16 +47,20 @@ onMounted(loadTutors);
 <template>
   <div>
     <header class="mb-4">
-      <h1 class="text-2xl font-bold">Listagem de Pets</h1>
+      <h1 class="text-2xl font-bold">Cadastrar Pét</h1>
       <p class="text-body-secondary mb-0">
         Listagem dos Pets cadastrados no sistema.
       </p>
     </header>
   </div>
 
-  <form @submit.prevent="savePet" class="row">
-    
-    <div class="col-md-6">
+  <form @submit.prevent="savePet" class="row g-2">
+    <div class="col-md-3">
+        <label class="form-label">ID</label>
+        <input type="id" class="form-control" placeholder="Gerado Automaticamente" disabled>
+    </div>
+
+    <div class="col-md-9">
         <label for="nome" class="form-label">Nome do Pet</label>
         <input type="text" class="form-control" id="nome" v-model="newPet.nome" required>
     </div>
@@ -82,7 +86,7 @@ onMounted(loadTutors);
     </div>
 
     <div class="col-12 d-flex gap-2">
-        <button class="btn btn-success" type="submit">Salvar Pet</button>
+        <button class="btn btn-success mt-3" type="submit"><i class="bi-floppy me-2"></i>Salvar Pet</button>
     </div>
   </form>
 </template>
