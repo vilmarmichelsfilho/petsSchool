@@ -1,5 +1,27 @@
 {
-  "tutores": [],
-  "pets": [],
+  "tutores": [
+    {
+      "nome": "Davi Augusto Ramos",
+      "cpf": "144.735.709-40",
+      "telefone": "479847351409",
+      "email": "daviramos@gmail.com",
+      "dataNascimento": "2009-09-09",
+      "id": "pS7RqHx8w2Y",
+      "rua": "Rua Egon Freitag",
+      "numero": "73",
+      "bairro": "Adhemar Garcia",
+      "cidade": "Joinville",
+      "estado": "Santa Catarina",
+      "cep": "89230-725"
+    }
+  ],
+  "pets": [
+    {
+      "nome": "Igor Decker",
+      "especie": "Cachorro",
+      "tutorId": "pS7RqHx8w2Y",
+      "id": "OIuskWQAj90"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

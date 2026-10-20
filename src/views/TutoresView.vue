@@ -58,8 +58,10 @@ onMounted(loadData);
   <table class="table table-striped table-hover mt-3">
     <thead>
         <th>ID</th>
-        <th>Nome</th>
+        <th>Nome Completo</th>
+        <th>CPF</th>
         <th>Telefone</th>
+        <th>E-mail</th>
         <th>Pets (Quantidade)</th>
         <th>Nome dos Pets</th>
         <th>Ações</th>
@@ -68,7 +70,9 @@ onMounted(loadData);
         <tr v-for="tutor in tutors" :key="tutor.id">
             <td>{{ tutor.id }}</td>
             <td>{{ tutor.nome }}</td>
+            <td>{{ tutor.cpf }}</td>
             <td>{{ tutor.telefone }}</td>
+            <td>{{ tutor.email }}</td>
             <td>{{ getPets(tutor.id).length }}</td>
             <td>{{ getPets(tutor.id).join(' / ') }}</td>
             <td>
