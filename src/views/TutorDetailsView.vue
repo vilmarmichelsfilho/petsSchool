@@ -79,6 +79,14 @@ onMounted(carregarPet);
                     <th>Espécie</th>
                     <th>Ações</th>
                 </thead>
+                <tbody>
+                    <tr v-for="pet in Array.from(getPets(tutor.id))" :key="pet.id">
+                        <td>{{ pets[pets.findIndex(i => i.id === pet)].id }}</td>
+                        <td>{{ pets[pets.findIndex(i => i.id === pet)].nome }}</td>
+                        <td>{{ pets[pets.findIndex(i => i.id === pet)].especie }}</td>
+                        <td><RouterLink :to="`/pets/${pets[pets.findIndex(i => i.id === pet)].id}`" class="btn btn-sm btn-outline-info">Vizualizar Pet</RouterLink></td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
