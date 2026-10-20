@@ -100,7 +100,6 @@ onMounted(loadTutors);
       </p>
     </header>
   </div>
-
   <form @submit.prevent="salvarTutor" class="row g-3">
     <h4 class="border-bottom pb-2">Dados do Tutor</h4>
     <div class="col-md-3">
@@ -109,7 +108,7 @@ onMounted(loadTutors);
     </div>
     <div class="col-md-9">
         <label class="form-label">Nome Completo</label>
-        <input required type="text" class="form-control is-invalid" v-model="novoTutor.nome">
+        <input required type="text" class="form-control" v-model="novoTutor.nome">
     </div>
     <div class="col-md-6">
       <label class="form-label">CPF / CNPJ</label>
