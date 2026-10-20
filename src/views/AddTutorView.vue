@@ -1,6 +1,9 @@
 <script setup>
+import { Alert } from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { onMounted, ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
+
+const alert = ref(false);
 
 // calling router
 const router = useRouter();
@@ -39,24 +42,40 @@ async function loadTutors() {
 
 // save tutor into the system
 async function salvarTutor() {
-    await fetch(`${API_URL}/tutores`, {
+  const valor = ref(true);
+  for (const object in novoTutor.value) {
+    if (novoTutor.value[object] == '') {
+      valor.value = false;
+      if (object == 'id') {
+        valor.value = true
+      }
+    }
+  }
+
+  if (valor.value == false) {
+    alert.value = true;
+  } else {
+     await fetch(`${API_URL}/tutores`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(novoTutor.value),
-    });
-    // redirect to pets list page
-    router.push('/tutores');
+      });
+      // redirect to pets list page
+      router.push('/tutores');
+  }
 }
 
 async function buscarCep() {
-  const answer = await fetch(`https://viacep.com.br/ws/${novoTutor.value.cep}/json/`);
+  const answer = await fetch(
+    `https://viacep.com.br/ws/${novoTutor.value.cep}/json/`,
+  );
 
   const data = await answer.json();
 
   if (data.erro) {
-    console.log("CEP não encontrado!");
+    console.log('CEP não encontrado!');
     return;
   }
 
@@ -67,25 +86,47 @@ async function buscarCep() {
   novoTutor.value.cep = data.cep;
 }
 
-function formatarCPF() {
+async function formatarCPF() {
   let cpf = novoTutor.value.cpf;
-  cpf = cpf.replace(/\D/g, "");
+  cpf = cpf.replace(/\D/g, '');
   cpf = cpf.substring(0, 11);
-  cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
-  cpf = cpf.replace(/(\d{3})(\d)/, "$1.$2");
-  cpf = cpf.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+  cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+  cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
   novoTutor.value.cpf = cpf;
 }
 
-function formatarCEP() {
+async function formatarCEP() {
   let cep = novoTutor.value.cep;
 
-  cep = cep.replace(/\D/g, "");
+  cep = cep.replace(/\D/g, '');
   cep = cep.substring(0, 8);
-  cep = cep.replace(/(\d{5})(\d)/, "$1-$2");
+  cep = cep.replace(/(\d{5})(\d)/, '$1-$2');
 
   novoTutor.value.cep = cep;
+}
+
+async function formataData() {
+  let data = novoTutor.value.dataNascimento;
+
+  data = data.replace(/\D/g, '');
+  data = data.substring(0, 8);
+  data = data.replace(/(\d{2})(\d)/, '$1/$2');
+  data = data.replace(/(\d{2})(\d)/, '$1/$2');
+
+  novoTutor.value.dataNascimento = data;
+}
+
+async function formataNumero() {
+  let telefone = novoTutor.value.telefone;
+
+  telefone = telefone.replace(/\D/g, '');
+  telefone = telefone.substring(0, 11);
+  telefone = telefone.replace(/(\d{2})(\d)/, '$1 $2');
+  telefone = telefone.replace(/(\d{5})(\d)/, '$1-$2');
+
+  novoTutor.value.telefone = telefone;
 }
 
 onMounted(loadTutors);
@@ -100,61 +141,186 @@ onMounted(loadTutors);
       </p>
     </header>
   </div>
-  <form @submit.prevent="salvarTutor" class="row g-3">
+  <form
+    @submit.prevent="salvarTutor"
+    class="row g-3"
+  >
     <h4 class="border-bottom pb-2">Dados do Tutor</h4>
     <div class="col-md-3">
-        <label class="form-label">ID</label>
-        <input required type="id" class="form-control" placeholder="Gerado Automaticamente" disabled>
+      <label class="form-label">ID</label>
+      <input
+        type="id"
+        class="form-control"
+        placeholder="Gerado Automaticamente"
+        disabled
+      />
     </div>
     <div class="col-md-9">
-        <label class="form-label">Nome Completo</label>
-        <input required type="text" class="form-control" v-model="novoTutor.nome">
+      <label class="form-label">Nome Completo</label>
+      <input
+        type="text"
+        class="form-control"
+        :class="{ 'is-invalid': novoTutor.nome == '' && alert == true }"
+        v-model="novoTutor.nome"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">CPF / CNPJ</label>
-      <input required @input="formatarCPF" class="form-control" type="text" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="Digite o CPF ou CNPJ" v-model="novoTutor.cpf">
+      <input
+        @input="formatarCPF"
+        class="form-control"
+        :class="{
+          'is-invalid':
+            (novoTutor.cpf == '' && alert == true) ||
+            (novoTutor.cpf.length < 14 && alert == true),
+        }"
+        type="text"
+        pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+        placeholder="Digite o CPF ou CNPJ"
+        v-model="novoTutor.cpf"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
-        <label class="form-label">Telefone / Celular / Whatsapp</label>
-        <input required type="tel" class="form-control" v-model="novoTutor.telefone">
+      <label class="form-label">Telefone / Celular / Whatsapp</label>
+      <input
+        @input="formataNumero"
+        type="tel"
+        class="form-control"
+        :class="{
+          'is-invalid':
+            (novoTutor.telefone == '' && alert == true) ||
+            (novoTutor.telefone.length < 13 && alert == true),
+        }"
+        v-model="novoTutor.telefone"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">E-mail</label>
-      <input required type="email" v-model="novoTutor.email" class="form-control" placeholder="nome@example.com">
+      <input
+        type="email"
+        v-model="novoTutor.email"
+        class="form-control"
+        :class="{ 'is-invalid': novoTutor.email == '' && alert == true }"
+        placeholder="nome@example.com"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">Data de Nascimento</label>
-      <input required type="date" class="form-control" v-model="novoTutor.dataNascimento">
+      <input
+        @input="formataData"
+        type="text"
+        class="form-control"
+        :class="{
+          'is-invalid':
+            (novoTutor.dataNascimento == '' && alert == true) ||
+            (novoTutor.dataNascimento.length < 10 && alert == true),
+        }"
+        placeholder="00/00/0000"
+        v-model="novoTutor.dataNascimento"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
 
     <h4 class="border-bottom pb-2">Endereço</h4>
     <div class="col-md-9">
       <label class="form-label">Rua</label>
-      <input required type="text" class="form-control" placeholder="Digite o nome da rua" v-model="novoTutor.rua">
+      <input
+        type="text"
+        class="form-control"
+        :class="{ 'is-invalid': novoTutor.rua == '' && alert == true }"
+        placeholder="Digite o nome da rua"
+        v-model="novoTutor.rua"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-3">
       <label class="form-label">Número</label>
-      <input required type="text" class="form-control" placeholder="Número" v-model="novoTutor.numero">
+      <input
+        type="text"
+        class="form-control"
+        :class="{ 'is-invalid': novoTutor.numero == '' && alert == true }"
+        placeholder="Número"
+        v-model="novoTutor.numero"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">Bairro</label>
-      <input required type="text" class="form-control" placeholder="Bairro" v-model="novoTutor.bairro">
+      <input
+        type="text"
+        class="form-control"
+        :class="{ 'is-invalid': novoTutor.bairro == '' && alert == true }"
+        placeholder="Bairro"
+        v-model="novoTutor.bairro"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
     <div class="col-md-6">
       <label class="form-label">Cidade</label>
-      <input required type="text" class="form-control" placeholder="Cidade" v-model="novoTutor.cidade" disabled>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Cidade"
+        v-model="novoTutor.cidade"
+        disabled
+      />
     </div>
     <div class="col-md-6">
       <label class="form-label">Estado</label>
-      <input required type="text" v-model="novoTutor.estado" class="form-control" disabled></input>
+      <input
+        type="text"
+        v-model="novoTutor.estado"
+        class="form-control"
+        disabled
+      />
     </div>
     <div class="col-md-6">
       <label class="form-label">CEP</label>
-      <input required @input="formatarCEP" type="text" class="form-control" v-model="novoTutor.cep" placeholder="00000-000" @change="buscarCep">
+      <input
+        @input="formatarCEP"
+        type="text"
+        class="form-control"
+        :class="{
+          'is-invalid':
+            (novoTutor.cep == '' && alert == true) ||
+            (novoTutor.cep.length < 9 && alert == true),
+        }"
+        v-model="novoTutor.cep"
+        placeholder="00000-000"
+        @change="buscarCep"
+      />
+      <div class="invalid-feedback">
+        Ops, campo obrigatório, por favor preencha-o!
+      </div>
     </div>
 
     <div class="col-12 d-flex gap-2">
-        <button type="submit" class="btn btn-success"><i class="bi-floppy me-2"></i>Salvar Tutor</button>
+      <button
+        type="submit"
+        class="btn btn-success"
+      >
+        <i class="bi-floppy me-2"></i>Salvar Tutor
+      </button>
     </div>
   </form>
 </template>
