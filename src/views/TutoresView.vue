@@ -31,6 +31,17 @@ function getPets(tutorId) {
     return petsDesteTutor.value;
 }
 
+async function excluirTutor(id) {
+  const confirmarExclusão = window.confirm('Deseja realmente excluir o pet?');
+
+  if (confirmarExclusão) {
+    await fetch(`${API_URL}/tutores/${id}`, {
+      method: 'DELETE',
+    });
+    await loadData();
+  }
+}
+
 onMounted(loadData);
 </script>
 
@@ -62,7 +73,7 @@ onMounted(loadData);
             <td>{{ getPets(tutor.id).join(' / ') }}</td>
             <td>
                 <RouterLink class="btn btn-sm btn-outline-info me-2" :to="`/tutores/${tutor.id}`"><i class="bi-eye-fill me-1"></i>Visualizar</RouterLink>
-                <button class="btn btn-sm btn-outline-danger"><i class="bi-trash me-1"></i>Excluir</button>
+                <button v-on:click.prevent="excluirTutor(tutor.id)" class="btn btn-sm btn-outline-danger"><i class="bi-trash me-1"></i>Excluir</button>
             </td>
         </tr>
     </tbody>
